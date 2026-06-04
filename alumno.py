@@ -1,3 +1,13 @@
+"""
+Módulo para la gestión y tratamiento de notas de alumnos.
+Autor: Guillem Pérez Sánchez
+QP 2026
+"""
+
+import re
+import doctest
+
+
 class Alumno:
     """
     Clase usada para el tratamiento de las notas de los alumnos. Cada uno
@@ -42,3 +52,51 @@ class Alumno:
         completo y la nota media del alumno con un decimal.
         """
         return f'{self.numIden}\t{self.nombre}\t{self.media():.1f}'
+
+
+def leeAlumnos(ficAlum):
+    """
+    Lee un fichero de texto con los datos de todos los alumnos y devuelve un
+    diccionario en el que la clave sea el nombre de cada alumno y su contenido
+    el objeto Alumno correspondiente.
+
+    >>> from alumno import leeAlumnos
+    >>> alumnos = leeAlumnos('alumnos.txt')
+    >>> for alumno in alumnos:
+    ...     print(alumnos[alumno])
+    ...
+    171     Blanca Agirrebarrenetse 9.5
+    23      Carles Balcells de Lara 4.9
+    68      David Garcia Fuster     7.0
+    """
+    dicc_alumnos = {}
+    
+    # Expresión regular para capturar ID (opcional), Nombre y Notas consecutivas
+    patron = re.compile(
+        r'^\s*(?P<id>\d+)?\s+(?P<nombre>[A-Za-zÀ-ÿ\s]+?)\s+(?P<notas>[\d.\s]+)$'
+    )
+
+    with open(ficAlum, 'r', encoding='utf-8') as f:
+        for linea in f:
+            linea = linea.strip()
+            if not linea:
+                continue
+            
+            match = patron.match(linea)
+            if match:
+                id_str = match.group('id')
+                numIden = int(id_str) if id_str else -1
+                nombre = match.group('nombre').strip()
+                
+                # Extraer todas las notas decimales o enteras del bloque final
+                notas_str = re.findall(r'\d+(?:\.\d+)?', match.group('notas'))
+                notas = [float(n) for n in notas_str]
+                
+                dicc_alumnos[nombre] = Alumno(nombre, numIden, notas)
+                
+    return dicc_alumnos
+
+
+if __name__ == '__main__':
+    # Ejecución por defecto en modo verboso para la generación del reporte
+    doctest.testmod(optionflags=doctest.NORMALIZE_WHITESPACE, verbose=True)
