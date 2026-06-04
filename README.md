@@ -5,7 +5,7 @@
 > [!Important]
 > Introduzca a continuación su nombre y apellidos:
 >
-> Fulano Mengano Zutano
+> Guillem Pérez Sánchez
 
 ## Aviso Importante
 
